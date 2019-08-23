@@ -8,8 +8,9 @@ import static spark.Spark.get;
 import static spark.Spark.port;
 
 /**
+ * Web Calculator App represents the main class that allows a REST service.
  *
- *
+ * @author Carlos Medina
  */
 public class WebCalculatorApp {
 
@@ -19,6 +20,13 @@ public class WebCalculatorApp {
         get("/results", (req, res) -> analizarDatos(req, res));
     }
 
+    /**
+     * Receive a request, analyze the data by calculating the mean and standard deviation.
+     *
+     * @param req request of the client.
+     * @param res responde of the page
+     * @return String : it returns the page content with the analyzed data.
+     */
     private static String analizarDatos(Request req, Response res) {
         String pageContent = "<!DOCTYPE html>\n"
                 + "<html>\n"

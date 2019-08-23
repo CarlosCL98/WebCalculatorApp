@@ -4,36 +4,28 @@ Esta aplicación web permite calcular la media y la desviación estándar de un 
 
 ## Diseño de Arquitectura
 
+![](/src/main/resources/img/DiagramaDeClases.PNG)
+
+![](/src/main/resources/img/DiagramaDeDespliegue.PNG)
+
+La arquitectua realizada permite identificar los principales componentes como lo son los clientes y los servidores. Para estos últimos encontramos a Heroku como servidor en donde se encuentra desplegada la página, además de los componentes con los cuáles interactúa la aplicación central de Web Calculator App.
+
+Cuando se realiza una petición get, el framewrok Spark ayuda a consumir dichas peticiones que de acuerdo a su implementación otorgan un resultado. Esta podemos denotarla como una interfaz, de manera que ofrece diversas formas de conectarse a ella, ya sea por requerimientos HTTP o respuestas, entre otros.
+
 ## Documentación
+Para ver la documentación y más información sobre las funcionalidades, acceda a los siguientes links:
+ 
+- [API de WebCalculatorApp](https://carloscl98.github.io/WebCalculatorApp/src/main/resources/site/apidocs/index.html)
+- [Tests de WebCalculatorApp](https://carloscl98.github.io/WebCalculatorApp/src/main/resources/site/testapidocs/index.html)
 
 ## Prerrequisitos
 Antes de usar el programa, tenga en cuenta que debe usar **java JDK 1.8**.
 
 ## Cómo usar el programa
 
-1. Para usar el programa, se debe primero clonar el repositorio con el comando:
+1. Para usar el programa, debe acceder al siguiente link en **Heroku**:
 
-	> git clone [https://github.com/CarlosCL98/WebCalculatorApp.git](https://github.com/CarlosCL98/WebCalculatorApp.git)
-
-2. Después se accede a la dirección donde el repositorio fue clonado y se ejecutan los siguientes comando:
-
-	> mvn package<br>mvn install
-
-3. El último comando **mvn install** genera un archivo .jar que puede copiar y pegar en su proyecto para poder usarlo.
-
-## Generar Javadoc
-Para generar el javadoc del programa como de las pruebas puede usar:
-
-> mvn javadoc:javadoc
-> 
-> mvn javadoc:test-javadoc
-
-## Ejecutar las pruebas
-Para ejecutar las pruebas ejecute el siguiente comando:
-
-> mvn test
-
-Recuerde que las pruebas se ejecutan también al usar mvn package.
+	> [Web Calculator App Heroku](https://webcalculatorapp.herokuapp.com)
 
 ## Creador
 
