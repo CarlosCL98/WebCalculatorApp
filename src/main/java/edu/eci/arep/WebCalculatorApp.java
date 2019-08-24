@@ -1,11 +1,15 @@
 package edu.eci.arep;
 
+import com.google.gson.Gson;
+
+import edu.eci.arep.CalculatorServices.CalculatorApp;
+import edu.eci.arep.CalculatorServices.ResultService;
+import edu.eci.arep.CalculatorServices.StandardResponse;
+import edu.eci.arep.CalculatorServices.StatusResponse;
+import edu.eci.arep.Entities.Result;
 import edu.eci.arep.LinkedList.LinkedList;
-import spark.Request;
-import spark.Response;
-import spark.Spark;
-import static spark.Spark.get;
-import static spark.Spark.port;
+
+import static spark.Spark.*;
 
 /**
  * Web Calculator App represents the main class that allows a REST service.
@@ -14,93 +18,47 @@ import static spark.Spark.port;
  */
 public class WebCalculatorApp {
 
+    private static ResultService resultService = new ResultService();
+
     public static void main(String[] args) {
         port(getPort());
-        Spark.staticFiles.location("/public");
-        get("/results", (req, res) -> analizarDatos(req, res));
-    }
-
-    /**
-     * Receive a request, analyze the data by calculating the mean and standard deviation.
-     *
-     * @param req request of the client.
-     * @param res responde of the page
-     * @return String : it returns the page content with the analyzed data.
-     */
-    private static String analizarDatos(Request req, Response res) {
-        String pageContent = "<!DOCTYPE html>\n"
-                + "<html>\n"
-                + "    <head>\n"
-                + "        <title>Web Calculator App</title>\n"
-                + "        <meta charset=\"UTF-8\">\n"
-                + "        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
-                + "\n"
-                + "        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" integrity=\"sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm\" crossorigin=\"anonymous\">\n"
-                + "        <script src=\"https://code.jquery.com/jquery-3.2.1.slim.min.js\" integrity=\"sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN\" crossorigin=\"anonymous\"></script>\n"
-                + "        <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" integrity=\"sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q\" crossorigin=\"anonymous\"></script>\n"
-                + "        <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" integrity=\"sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl\" crossorigin=\"anonymous\"></script>\n"
-                + "    </head>\n"
-                + "    <body>\n"
-                + "        <div class=\"container\">            \n"
-                + "            <div class=\"row\" style=\"padding: 5% 0 5% 0;\">\n"
-                + "                <div class=\"col-md-3\"></div>\n"
-                + "                <div class=\"col-md-6\" style=\"text-align: center;\">\n"
-                + "                    <h2>Web Calculator App</h2>\n"
-                + "                    <h4>Results</h4>\n"
-                + "                </div>\n"
-                + "                <div class=\"col-md-3\"></div>\n"
-                + "            </div>\n"
-                + "            <div class=\"row\">\n"
-                + "                <div class=\"col-md-3\"></div>\n"
-                + "                <div class=\"col-md-2\" style=\"text-align: center;\">\n"
-                + "                    <table class=\"table table-bordered\">\n"
-                + "                        <thead class=\"thead-dark\">\n"
-                + "                            <tr>\n"
-                + "                                <th>Datos (Data)</th>\n"
-                + "                            </tr>\n"
-                + "                        </thead>\n"
-                + "                        <tbody>\n";
-        LinkedList data = new LinkedList();
-        String[] dataString = req.queryParams("data").split(",");
-        for (String d : dataString) {
-            pageContent += "<tr><td>" + d + "</td></tr>";
-            data.add(Double.parseDouble(d));
-        }
-        double mean = CalculatorApp.mean(data);
-        double deviation = CalculatorApp.standardDeviation(data, mean);
-        pageContent += "                        </tbody>\n"
-                + "                    </table>\n"
-                + "                </div>\n"
-                + "                <div class=\"col-md-4\" style=\"text-align: center;\">\n"
-                + "                    <table class=\"table table-bordered\">\n"
-                + "                        <thead class=\"thead-dark\">\n"
-                + "                            <tr>\n"
-                + "                                <th>Promedio (Mean)</th>\n"
-                + "                                <th>Desviación Estándar (Standard Deviation)</th>\n"
-                + "                            </tr>\n"
-                + "                        </thead>\n"
-                + "                        <tbody>\n"
-                + "                            <tr>\n"
-                + "                                <td>" + mean + "</td>"
-                + "                                <td>" + deviation + "</td>"
-                + "                            </tr>\n"
-                + "                        </tbody>\n"
-                + "                    </table>\n"
-                + "                </div>\n"
-                + "                <div class=\"col-md-3\"></div>\n"
-                + "            </div>\n"
-                + "            <div class=\"row\">\n"
-                + "                <div class=\"col-md-3\"></div>\n"
-                + "                <div class=\"col-md-6\" style=\"text-align: center;\">\n"
-                + "                    <input type=\"button\" class=\"btn btn-primary\" value=\"Regresar\" onclick=\"window.location.href='/'\">\n"
-                + "                </div>\n"
-                + "                <div class=\"col-md-3\"></div>\n"
-                + "            </div>\n"
-                + "        </div>\n"
-                + "    </body>\n"
-                + "</html>\n"
-                + "";
-        return pageContent;
+        staticFiles.location("/public");
+        // Show main page.
+        get("/calculator", (request, response) -> {
+            response.type("text/html");
+            response.redirect("/index.html");
+            response.status(200);
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+        });
+        // Get all results saved.
+        get("/calculator/results", (request, response) -> {
+            response.type("application/json");
+            response.status(200);
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJson(resultService.getAllResults())));
+        });
+        // Get last result saved.
+        get("/calculator/result", (request, response) -> {
+            response.type("application/json");
+            response.status(200);
+            Result result = resultService.getResultById(resultService.getMaxId());
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJson(result)));
+        });
+        // Create a new result by analyzing the data.
+        post("/calculator/result", (request, response) -> {
+            response.type("application/json");
+            LinkedList data = new LinkedList();
+            String[] dataString = request.queryParams("data").split(",");
+            for (String d : dataString) {
+                data.add(Double.parseDouble(d));
+            }
+            double mean = CalculatorApp.mean(data);
+            double deviation = CalculatorApp.standardDeviation(data, mean);
+            Result result = new Result(resultService.getMaxId() + 1, mean, deviation);
+            resultService.addResult(result);
+            response.status(201);
+            response.redirect("/results.html");
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJson(result)));
+        });
     }
 
     /**
